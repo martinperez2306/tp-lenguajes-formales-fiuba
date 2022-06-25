@@ -73,6 +73,10 @@
 (declare evaluar-clausulas-en-cond)
 (declare evaluar-secuencia-en-cond)
 
+;Funciones auxilares declaradas por el alumno
+(declare estandarizar)
+(declare secuencias-iguales?)
+
 
 ; REPL (read–eval–print loop).
 ; Aridad 0: Muestra mensaje de bienvenida y se llama recursivamente con el ambiente inicial.
@@ -376,6 +380,15 @@
 
 ; FUNCIONES QUE DEBEN SER IMPLEMENTADAS PARA COMPLETAR EL INTERPRETE DE TLC-LISP (ADEMAS DE COMPLETAR 'EVALUAR' Y 'APLICAR-FUNCION-PRIMITIVA'):
 
+(defn estandarizar [expresion]
+  "Evalua una expresion y devuelve en funcion del tipo de dato"
+  (cond ;En caso de ser nil, 'nil o 'NIL devuelve nil. En caso de ser un string lo devuelve en minuscula. En otro caso lo devuelve intacto.
+    (or (nil? expresion) (= "nil" (lower-case expresion))) nil
+    (symbol? expresion) (symbol (lower-case expresion))
+    :else expresion
+  )
+)
+
 ; user=> (controlar-aridad '(a b c) 3)
 ; 3
 ; user=> (controlar-aridad '(a b c) 2)
@@ -392,4 +405,66 @@
   )
 )
 
+; user=> (igual? 1 1)
+; true
+; user=> (igual? 1 2)
+; false
+; user=> (igual? 'a 'a)
+; true
+; user=> (igual? 'A 'A)
+; true
+; user=> (igual? 'a 'A)
+; true
+; user=> (igual? 'A 'a)
+; true
+; user=> (igual? 'a 'b)
+; false
+; user=> (igual? '(a b c) '(A B C))
+; true
+; user=> (igual? '(a b c) '(A B D))
+; false
+; user=> (igual? nil nil)
+; true
+; user=> (igual? nil 'NIL)
+; true
+; user=> (igual? 'NIL nil)
+; true
+; user=> (igual? 'NIL 'NIL)
+; true
+; user=> (igual? nil ())
+; true
+; user=> (igual? 'NIL ())
+; true
+; user=> (igual? () ())
+; true
+; user=> (igual? () '(nil))
+; false
+; user=> (igual? "a" "a")
+; true
+; user=> (igual? "a" "A")
+; false
+; user=> (igual? 'a "a")
+; false
+; user=> (igual? 'a "A")
+; false
+(defn igual? [e1 e2]
+  "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
+  (if (seq? e1)
+      (and ; Si e1 es una secuencia se evalua si el segundo elemento es una secuencia tambien y si contienen los mismos elementos;
+        (seq? e2) 
+        (secuencias-iguales? e1 e2)
+      ) 
+      (and ; En otro caso, se evalua si el segundo elemento no es una secuencia y si es el mismo elemento.
+        (not (seq? e2))
+        (= (estandarizar e1) (estandarizar e2))
+      ) 
+  )
+)
 
+(defn secuencias-iguales? [sec1 sec2]
+  "Recibe dos secuencias y verifica la igualdad de sus elementos"
+  (and 
+    (= (count sec1) (count sec2))
+    (every? identity (map-indexed (fn [idx x] (igual? x (nth sec2 idx))) sec1)) 
+  )
+)
