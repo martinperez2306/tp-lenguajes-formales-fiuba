@@ -450,14 +450,26 @@
 (defn igual? [e1 e2]
   "Verifica la igualdad entre dos elementos al estilo de TLC-LISP (case-insensitive)."
   (if (seq? e1)
-      (and ; Si e1 es una secuencia se evalua si el segundo elemento es una secuencia tambien y si contienen los mismos elementos;
-        (seq? e2) 
-        (secuencias-iguales? e1 e2)
-      ) 
-      (and ; En otro caso, se evalua si el segundo elemento no es una secuencia y si es el mismo elemento.
-        (not (seq? e2))
-        (= (estandarizar e1) (estandarizar e2))
-      ) 
+      (or 
+        (and ; Si e1 es una secuencia vacia se evalua si el segundo elemento es es nil;
+          (empty? e1)
+          (nil? (estandarizar e2))
+        )
+        (and ; Si e1 es una secuencia se evalua si el segundo elemento es una secuencia tambien y si contienen los mismos elementos;
+          (seq? e2) 
+          (secuencias-iguales? e1 e2)
+        )
+      )
+      (or
+        (and ; Si no, se evalua si el primer elemento es nil y el segundo es una secuencia vacia.
+          (nil? (estandarizar e1))
+          (and (seq? e2) (empty? e2))
+        )
+        (and ; En otro caso, se evalua si el segundo elemento no es una secuencia y si es el mismo elemento.
+          (not (seq? e2))
+          (= (estandarizar e1) (estandarizar e2))
+        ) 
+      )
   )
 )
 
