@@ -103,8 +103,6 @@
 )
 
 (deftest revisar-lae-test
-  (testing "Devuelve nil cuando no hay ningun error en lae"
-    (println (revisar-lae '(1 2 3))))
   (testing "Devuelve nil cuando es nil"
     (is (nil? (revisar-lae nil))))
   (testing "Devuelve nil cuando es vacio"
@@ -113,4 +111,21 @@
     (is (= '(*error* too-few-args) (revisar-lae '(1 (*error* too-few-args) 3)))))
   (testing "Devuelve el primer error encontrado"
     (is (= '(*error* too-many-args) (revisar-lae '((*error* too-many-args) (*error* too-few-args) 3)))))
+)
+
+(deftest secuencia-a-hashmap-test
+  (testing "Devuelve un hashmap dado una secuencia"
+    (is (= '{a 1, b 2, c 3, d 4} (secuencia-a-hashmap '(a 1 b 2 c 3 d 4)))))
+)
+
+(deftest hashmap-a-secuencia-test
+  (testing "Devuelve un hashmap dado una secuencia"
+    (is (= '(a 1 b 2 c 3 d 4) (hashmap-a-secuencia '{a 1, b 2, c 3, d 4}))))
+)
+
+(deftest actualizar-amb-test
+  (testing "Actualiza el ambiente"
+    (is (= '(a 1 c 3 b 2 d 4) (actualizar-amb '(a 1 b 2 c 3) 'd 4)))) ;;REVISAR SI HACE FALTA ORDENAR PARA QUE MANTENGA EL MISMO ORDEN
+  (testing "Actualiza el ambiente"
+    (is (= '(a 1 c 3 b 4) (actualizar-amb '(a 1 b 2 c 3) 'b 4))))
 )

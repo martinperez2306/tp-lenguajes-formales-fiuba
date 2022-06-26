@@ -76,6 +76,8 @@
 ;Funciones auxilares declaradas por el alumno
 (declare estandarizar)
 (declare secuencias-iguales?)
+(declare secuencia-a-hashmap)
+(declare hashmap-a-secuencia)
 
 
 ; REPL (read–eval–print loop).
@@ -538,4 +540,35 @@
   "Devuelve el primer elemento que es un mensaje de error. Si no hay ninguno, devuelve nil."
   (let [errores (filter (fn [x] (not (nil? x))) (map revisar-fnc lae))]
     (if (empty? errores) nil (first errores)))
+)
+
+(defn secuencia-a-hashmap [secuencia]
+  "Devuelve un hashmap dado una secuencia"
+  (apply hash-map secuencia)
+)
+
+(defn hashmap-a-secuencia [hashmap]
+  "Devuelve una secuencia (clave1 valor1 clave2 valor2 ... ) dado un hashmap"
+  (let [secuencia-auxiliar (map (fn [x] (list (key x) (val x))) hashmap)]
+  (apply concat secuencia-auxiliar))
+)
+
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
+; (a 1 b 2 c 3 d 4)
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'b 4)
+; (a 1 b 4 c 3)
+; user=> (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho))
+; (a 1 b 2 c 3)
+; user=> (actualizar-amb () 'b 7)
+; (b 7)
+(defn actualizar-amb [amb clave valor]
+  "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor. 
+  Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
+  (hashmap-a-secuencia
+    (assoc
+      (secuencia-a-hashmap amb)
+      clave 
+      valor
+    )
+  )
 )
