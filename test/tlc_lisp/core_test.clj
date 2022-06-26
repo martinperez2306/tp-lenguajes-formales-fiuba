@@ -101,3 +101,16 @@
   (testing "Devuelve nil cuando es lista vacia"
     (is (nil? (revisar-fnc '()))))
 )
+
+(deftest revisar-lae-test
+  (testing "Devuelve nil cuando no hay ningun error en lae"
+    (println (revisar-lae '(1 2 3))))
+  (testing "Devuelve nil cuando es nil"
+    (is (nil? (revisar-lae nil))))
+  (testing "Devuelve nil cuando es vacio"
+    (is (nil? (revisar-lae '()))))
+  (testing "Devuelve el primer error encontrado"
+    (is (= '(*error* too-few-args) (revisar-lae '(1 (*error* too-few-args) 3)))))
+  (testing "Devuelve el primer error encontrado"
+    (is (= '(*error* too-many-args) (revisar-lae '((*error* too-many-args) (*error* too-few-args) 3)))))
+)

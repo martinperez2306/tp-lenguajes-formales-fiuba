@@ -523,3 +523,19 @@
   "Si la lista es un mensaje de error, lo devuelve; si no, devuelve nil."
   (if (error? lista) lista)
 )
+
+; user=> (revisar-lae '(1 2 3))
+; nil
+; user=> (revisar-lae nil)
+; nil
+; user=> (revisar-lae ())
+; nil
+; user=> (revisar-lae '(1 (*error* too-few-args) 3))
+; (*error* too-few-args)
+; user=> (revisar-lae '(1 (*error* too-few-args) (*error* too-many-args) 3))
+; (*error* too-few-args)
+(defn revisar-lae [lae]
+  "Devuelve el primer elemento que es un mensaje de error. Si no hay ninguno, devuelve nil."
+  (let [errores (filter (fn [x] (not (nil? x))) (map revisar-fnc lae))]
+    (if (empty? errores) nil (first errores)))
+)
