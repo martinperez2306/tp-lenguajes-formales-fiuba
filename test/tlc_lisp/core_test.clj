@@ -88,3 +88,16 @@
   (testing "Error? devuelve false cuando es nil"
     (is (false? (error? nil))))
 )
+
+(deftest revisar-fnc-test
+  (testing "Devuelve la lista cuando es un mensaje de error"
+    (is (= '(*error* too-few-args) (revisar-fnc '(*error* too-few-args)))))
+  (testing "Devuelve nil cuando no es un mensaje de error"
+    (is (nil? (revisar-fnc '(too-few-args)))))
+  (testing "Devuelve nil cuando no es un mensaje de error"
+    (is (nil? (revisar-fnc '*error*))))
+  (testing "Devuelve nil cuando es nil"
+    (is (nil? (revisar-fnc nil))))
+  (testing "Devuelve nil cuando es lista vacia"
+    (is (nil? (revisar-fnc '()))))
+)
