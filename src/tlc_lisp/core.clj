@@ -400,8 +400,8 @@
    Si no, devuelve una lista con un mensaje de error (una lista con *error* como primer elemento)."
   (cond 
     (= (count sec) arity) arity
-    (> (count sec) arity) (list '*error* '"too-many-args")
-    (< (count sec) arity) (list '*error* '"too-few-args")
+    (> (count sec) arity) (list '*error* 'too-many-args)
+    (< (count sec) arity) (list '*error* 'too-few-args)
   )
 )
 
@@ -478,5 +478,33 @@
   (and 
     (= (count sec1) (count sec2))
     (every? identity (map-indexed (fn [idx x] (igual? x (nth sec2 idx))) sec1)) 
+  )
+)
+
+; user=> (error? '(*error* too-few-args))
+; true
+; user=> (error? (list '*error* 'too-few-args))
+; true
+; user=> (error? (list '*ERROR* 'too-few-args))
+; true
+; user=> (error? (list '*Error* 'too-few-args))
+; true
+; user=> (error? (list '*error*))
+; true
+; user=> (error? (list 'too-few-args))
+; false
+; user=> (error? '*error*)
+; false
+; user=> (error? ())
+; false
+; user=> (error? nil)
+; false
+(defn error? [error_list]
+  "Devuelve true o false, segun sea o no el arg. un mensaje de error (una lista con *error* como primer elemento)."
+  (and 
+    (not(nil? error_list))  
+    (seq? error_list) 
+    (not(empty? error_list))
+    (igual? '*error* (first error_list))
   )
 )

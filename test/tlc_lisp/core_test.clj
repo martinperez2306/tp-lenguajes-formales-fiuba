@@ -19,9 +19,9 @@
 
 (deftest controlar-aridad-test
   (testing "Controlar aridad devuelve error cuando la cantidad de parametros es menor a la esperada"
-    (is (= (controlar-aridad '(a b c) 4) '(*error* "too-few-args"))))
+    (is (= (controlar-aridad '(a b c) 4) '(*error* too-few-args))))
   (testing "Controlar aridad devuelve error cuando la cantidad de parametros es mayor a la esperada"
-    (is (= (controlar-aridad '(a b c) 2) '(*error* "too-many-args"))))
+    (is (= (controlar-aridad '(a b c) 2) '(*error* too-many-args))))
   (testing "Controlar aridad devuelve aridad cuando la cantidad de parametros es igual a la esperada"
     (is (= (controlar-aridad '(a b c) 3) '3)))
 )
@@ -70,4 +70,21 @@
     (is (false? (igual? 'a "a"))))
   (testing "Igual devuelve false cuando los elementos son simbolo y letra"
     (is (false? (igual? 'a "A"))))
+)
+
+(deftest error-test
+  (testing "Error? devuelve true cuando es una lista con primer elemento *error*"
+    (is (true? (error? '(*error* too-few-args)))))
+  (testing "Error? devuelve true cuando es una lista con primer elemento *error*"
+    (is (true? (error? (list '*error* 'too-few-args)))))
+  (testing "Error? devuelve true cuando es una lista con primer elemento *error*"
+    (is (true? (error? (list '*ERROR* 'too-few-args)))))
+  (testing "Error? devuelve true cuando es una lista con primer elemento *error*"
+    (is (true? (error? (list '*Error* 'too-few-args)))))
+  (testing "Error? devuelve true cuando es una lista con primer elemento *error*"
+    (is (true? (error? (list '*error*)))))
+  (testing "Error? devuelve false cuando es una lista vacia"
+    (is (false? (error? ()))))
+  (testing "Error? devuelve false cuando es nil"
+    (is (false? (error? nil))))
 )
