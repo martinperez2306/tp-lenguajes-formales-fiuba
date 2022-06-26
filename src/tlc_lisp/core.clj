@@ -564,11 +564,14 @@
 (defn actualizar-amb [amb clave valor]
   "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor. 
   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
-  (hashmap-a-secuencia
-    (assoc
-      (secuencia-a-hashmap amb)
-      clave 
-      valor
-    )
+  (if (error? valor) 
+      amb
+      (hashmap-a-secuencia
+        (assoc
+          (secuencia-a-hashmap amb)
+          clave 
+          valor
+        )
+      )
   )
 )

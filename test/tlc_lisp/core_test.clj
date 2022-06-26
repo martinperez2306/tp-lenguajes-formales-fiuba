@@ -124,8 +124,12 @@
 )
 
 (deftest actualizar-amb-test
-  (testing "Actualiza el ambiente"
+  (testing "Actualiza el ambiente con nuevo valor"
     (is (= '(a 1 c 3 b 2 d 4) (actualizar-amb '(a 1 b 2 c 3) 'd 4)))) ;;REVISAR SI HACE FALTA ORDENAR PARA QUE MANTENGA EL MISMO ORDEN
-  (testing "Actualiza el ambiente"
+  (testing "Actualiza el ambiente con valor existente"
     (is (= '(a 1 c 3 b 4) (actualizar-amb '(a 1 b 2 c 3) 'b 4))))
+  (testing "Actualiza el ambiente vacio"
+    (is (= '(b 7) (actualizar-amb '() 'b 7))))
+  (testing "No actualiza ambiente cuando recibe error"
+    (is (= '(a 1 b 2 c 3)  (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho)))))
 )
