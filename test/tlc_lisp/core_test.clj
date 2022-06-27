@@ -140,3 +140,24 @@
   (testing "Busca una clave en el ambiente devuelve error si no existe"
     (is (= '(*error* unbound-symbol f) (buscar 'f '(a 1 b 2 c 3 d 4 e 5)))))
 )
+
+(deftest fnc-append-test
+  (testing "Fusionar dos listas devuelve error si se pasan menos de dos listas"
+    (is (= '(*error* too-few-args) (fnc-append '((1 2))))))
+  (testing "Fusionar dos listas devuelve error si se pasan mas de dos listas"
+    (is (= '(*error* too-many-args) (fnc-append '( (1 2) (3) (4 5) (6 7) )))))
+  (testing "Fusionar dos listas devuelve error si se pasan mas de dos listas"
+    (is (= '(*error* list expected 3) (fnc-append '( (1 2) 3 )))))
+  (testing "Fusionar dos listas devuelve error si se pasa algo que no es lista"
+    (is (= '(*error* list expected A) (fnc-append '( (1 2) A )))))
+  (testing "Fusionar dos listas devuelve error si se pasa algo que no es lista"
+    (is (= '(*error* list expected B) (fnc-append '( B (1 2) )))))
+  (testing "Fusionar dos listas no concatena nil y devuelve la lista inicial"
+    (is (= '(1 2) (fnc-append '( (1 2) nil)))))
+  (testing "Fusionar dos listas no concatena vacio y devuelve la lista inicial"
+    (is (= '(1 2) (fnc-append '( () (1 2))))))
+  (testing "Fusionar dos listas devuelve nil si el resultado de concatenar es vacio"
+    (is (nil? (fnc-append '( nil nil)))))
+  (testing "Fusionar dos listas devuelve nil si el resultado de concatenar es vacio"
+    (is (nil? (fnc-append '( () ())))))
+)

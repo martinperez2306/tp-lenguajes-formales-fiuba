@@ -587,3 +587,35 @@
     (if (nil? valor) (list '*error* 'unbound-symbol clave) valor)
    )
 )
+
+; user=> (fnc-append '( (1 2) ))
+; (*error* too-few-args)
+; user=> (fnc-append '( (1 2) (3) (4 5) (6 7) ))
+; (*error* too-many-args)
+; user=> (fnc-append '( (1 2) 3 ))
+; (*error* list expected 3)
+; user=> (fnc-append '( (1 2) A ))
+; (*error* list expected A)
+; user=> (fnc-append '( (1 2) (3)))
+; (1 2 3)
+; user=> (fnc-append '( (1 2) nil ))
+; (1 2)
+; user=> (fnc-append '( () (1 2) ))
+; (1 2)
+; user=> (fnc-append '(nil nil))
+; nil
+; user=> (fnc-append '(() ()))
+; nil
+(defn fnc-append [listas]
+  "Devuelve el resultado de fusionar 2 sublistas."
+  (let [ari (controlar-aridad listas 2)]
+    (cond
+      (seq? ari) ari
+      (not(or (seq? (first listas)) (nil? (first listas)))) (list '*error* 'list 'expected (first listas))
+      (not(or (seq? (second listas)) (nil? (second listas)))) (list '*error* 'list 'expected (second listas))
+      :else (let [listas-concatenadas (apply concat listas)]
+              (if (empty? listas-concatenadas) nil listas-concatenadas)
+            )
+    )
+  )
+)
