@@ -1,6 +1,10 @@
 # tlc-lisp
 
-FIXME: description
+Trabajo practico final de Lenguajes Formales.
+
+Interprete de TLC-LISP en Clojure.
+
+Autor: Martin Nicolas Perez.
 
 ## Installation
 
@@ -8,9 +12,19 @@ Download from http://example.com/FIXME.
 
 ## Usage
 
-FIXME: explanation
+Para correr los test
 
-    $ java -jar tlc-lisp-0.1.0-standalone.jar [args]
+    $ lein test
+
+Para correr el repl sin interaccion
+
+    $ lein run
+
+Para correr el repl con interaccion
+
+    $ lein repl
+
+Luego desde ´$ lein repl´ ejecutar en el interprete para cargar el archivo con todas las funciones (load-file "src/tlc_lisp/core.clj")
 
 ## Options
 
