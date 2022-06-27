@@ -161,3 +161,10 @@
   (testing "Fusionar dos listas devuelve nil si el resultado de concatenar es vacio"
     (is (nil? (fnc-append '( () ())))))
 )
+
+(deftest fnc-env-test
+  (testing "Fusion de ambientes devuelve la concatenacion de sus secuencias"
+    (is (= '(a 1 b 2 c 3 d 4) (fnc-env () '(a 1 b 2) '(c 3 d 4)))))
+  (testing "Fusion de amientes devuelve error si el primer parametro no es vacio"
+    (is (= '(*error* too-many-args) (fnc-env '(5) '(a 1 b 2) '(c 3 d 4)))))
+)

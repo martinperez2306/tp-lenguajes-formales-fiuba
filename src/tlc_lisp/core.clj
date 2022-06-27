@@ -619,3 +619,12 @@
     )
   )
 )
+
+; user=> (fnc-env () '(a 1 b 2) '(c 3 d 4))
+; (a 1 b 2 c 3 d 4)
+; user=> (fnc-env '(5) '(a 1 b 2) '(c 3 d 4))
+; (*error* too-many-args)
+(defn fnc-env [vacio amb-global amb-local]
+  "Devuelve la fusion de los ambientes global y local."
+  (if (not(empty? vacio)) (list '*error* 'too-many-args) (fnc-append (list amb-global amb-local)))
+)
