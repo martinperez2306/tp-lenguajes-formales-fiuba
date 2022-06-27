@@ -628,3 +628,35 @@
   "Devuelve la fusion de los ambientes global y local."
   (if (not(empty? vacio)) (list '*error* 'too-many-args) (fnc-append (list amb-global amb-local)))
 )
+
+; user=> (fnc-equal '(1 1))
+; t
+; user=> (fnc-equal '(A a))
+; t
+; user=> (fnc-equal '("1" "1"))
+; t
+; user=> (fnc-equal '(nil NIL))
+; t
+; user=> (fnc-equal '(1 2))
+; nil
+; user=> (fnc-equal '(A B))
+; nil
+; user=> (fnc-equal '("1" 1))
+; nil
+; user=> (fnc-equal ())
+; (*error* too-few-args)
+; user=> (fnc-equal '(A))
+; (*error* too-few-args)
+; user=> (fnc-equal '(A a A))
+; (*error* too-many-args)
+(defn fnc-equal [comparables]
+  "Compara 2 elementos. Si son iguales, devuelve t. Si no, nil."
+  (let [ari (controlar-aridad comparables 2)]
+    (cond
+      (seq? ari) ari
+      :else (let [iguales (igual? (first comparables) (second comparables))]
+              (if (true? iguales) 't)
+            )
+    )
+  )
+)

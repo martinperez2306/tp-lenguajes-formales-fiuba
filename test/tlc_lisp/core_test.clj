@@ -168,3 +168,26 @@
   (testing "Fusion de amientes devuelve error si el primer parametro no es vacio"
     (is (= '(*error* too-many-args) (fnc-env '(5) '(a 1 b 2) '(c 3 d 4)))))
 )
+
+(deftest fnc-equal-test
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= 't (fnc-equal '(1 1)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= 't (fnc-equal '(A a)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= 't (fnc-equal '("1" "1")))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= 't (fnc-equal '(nil NIL)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (nil? (fnc-equal '(1 2)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (nil? (fnc-equal '(A B)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (nil? (fnc-equal '("1" 1)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= '(*error* too-few-args) (fnc-equal '()))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= '(*error* too-few-args) (fnc-equal '(A)))))
+  (testing "Comparar 2 elementos devuelve t si son iguales"
+    (is (= '(*error* too-many-args) (fnc-equal '(A a A)))))
+)
