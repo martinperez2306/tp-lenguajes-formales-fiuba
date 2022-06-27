@@ -689,5 +689,19 @@
   )
 )
 
+; user=> (fnc-terpri ())
+; 
+; nil
+; user=> (fnc-terpri '(1))
+; (*error* not-implemented)
+; user=> (fnc-terpri '(1 2))
+; (*error* not-implemented)
+(defn fnc-terpri
+  "Imprime un salto de línea y devuelve nil."
+  (let [ari (controlar-aridad input 0)]
+    (if (error? ari) (list '*error* 'not-implemented) (println "\n"))
+  )
+) 
+
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
 true
