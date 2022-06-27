@@ -1,12 +1,6 @@
 (ns tlc-lisp.core
   (:gen-class))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
-  
-
 (require '[clojure.string :refer [blank? ends-with? lower-case]] '[clojure.java.io :refer [reader]])
 
 (defn spy
@@ -79,6 +73,7 @@
 (declare secuencia-a-hashmap)
 (declare hashmap-a-secuencia)
 
+(defn -main [& args] (repl))
 
 ; REPL (read–eval–print loop).
 ; Aridad 0: Muestra mensaje de bienvenida y se llama recursivamente con el ambiente inicial.
@@ -610,7 +605,7 @@
   "Devuelve el resultado de fusionar 2 sublistas."
   (let [ari (controlar-aridad listas 2)]
     (cond
-      (seq? ari) ari
+      (error? ari) ari
       (not(or (seq? (first listas)) (nil? (first listas)))) (list '*error* 'list 'expected (first listas))
       (not(or (seq? (second listas)) (nil? (second listas)))) (list '*error* 'list 'expected (second listas))
       :else (let [listas-concatenadas (apply concat listas)]
@@ -653,10 +648,46 @@
   "Compara 2 elementos. Si son iguales, devuelve t. Si no, nil."
   (let [ari (controlar-aridad comparables 2)]
     (cond
-      (seq? ari) ari
+      (error? ari) ari
       :else (let [iguales (igual? (first comparables) (second comparables))]
               (if (true? iguales) 't)
             )
     )
   )
 )
+
+; user=> (fnc-read ())
+; 1
+; 1
+; user=> (fnc-read ())
+; a
+; a
+; user=> (fnc-read ())
+; "hola"
+; "hola"
+; user=> (fnc-read ())
+; (hola mundo)
+; (hola mundo)
+; user=> (fnc-read ())
+; (hola
+; mundo)
+; (hola mundo)
+; user=> (fnc-read ())
+; ()
+; nil
+; user=> (fnc-read ())
+; nil
+; nil
+; user=> (fnc-read '(1))
+; (*error* not-implemented)
+; user=> (fnc-read '(1 2))
+; (*error* not-implemented)
+(defn fnc-read [input]
+  "Devuelve la lectura de un elemento de TLC-LISP desde la terminal/consola."
+  (let [ari (controlar-aridad input 0)]
+    (if (error? ari) (list '*error* 'not-implemented) (read))
+  )
+)
+
+; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
+true
