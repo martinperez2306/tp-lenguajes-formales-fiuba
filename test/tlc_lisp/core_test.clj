@@ -133,3 +133,10 @@
   (testing "No actualiza ambiente cuando recibe error"
     (is (= '(a 1 b 2 c 3)  (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho)))))
 )
+
+(deftest buscar-test
+  (testing "Buscar una clave en el ambiente la devuelve el valor si existe"
+    (is (= 3 (buscar 'c '(a 1 b 2 c 3 d 4 e 5)))))
+  (testing "Busca una clave en el ambiente devuelve error si no existe"
+    (is (= '(*error* unbound-symbol f) (buscar 'f '(a 1 b 2 c 3 d 4 e 5)))))
+)
