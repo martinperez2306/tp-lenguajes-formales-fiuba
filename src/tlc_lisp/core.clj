@@ -696,12 +696,87 @@
 ; (*error* not-implemented)
 ; user=> (fnc-terpri '(1 2))
 ; (*error* not-implemented)
-(defn fnc-terpri
+(defn fnc-terpri [input]
   "Imprime un salto de línea y devuelve nil."
   (let [ari (controlar-aridad input 0)]
     (if (error? ari) (list '*error* 'not-implemented) (println "\n"))
   )
-) 
+)
+
+; user=> (fnc-gt ())
+; (*error* too-few-args)
+; user=> (fnc-gt '(1))
+; (*error* too-few-args)
+; user=> (fnc-gt '(2 1))
+; t
+; user=> (fnc-gt '(1 1))
+; nil
+; user=> (fnc-gt '(1 2))
+; nil
+; user=> (fnc-gt '(A 1))
+; (*error* number-expected A)
+; user=> (fnc-gt '(1 A))
+; (*error* number-expected A)
+; user=> (fnc-gt '(1 2 3))
+; (*error* too-many-args)
+(defn fnc-gt [numeros]
+  "Devuelve t si el primer numero es mayor que el segundo; si no, nil."
+  (let [ari (controlar-aridad numeros 2)]
+    (if (error? ari) ari 
+        (let [mayor (apply > numeros)] 
+          (if(mayor) (mayor))
+        )
+    )
+  )
+)
+
+; user=> (fnc-ge ())
+; (*error* too-few-args)
+; user=> (fnc-ge '(1))
+; (*error* too-few-args)
+; user=> (fnc-ge '(2 1))
+; t
+; user=> (fnc-ge '(1 1))
+; t
+; user=> (fnc-ge '(1 2))
+; nil
+; user=> (fnc-ge '(A 1))
+; (*error* number-expected A)
+; user=> (fnc-ge '(1 A))
+; (*error* number-expected A)
+; user=> (fnc-ge '(1 2 3))
+; (*error* too-many-args)
+(defn fnc-ge [numeros]
+  "Devuelve t si el primer numero es mayor o igual que el segundo; si no, nil."
+  (let [ari (controlar-aridad numeros 2)]
+    (if (error? ari) ari 
+        (let [mayor-igual (or (apply > numeros) (apply = numeros))] 
+          (if(mayor-igual) (mayor-igual))
+        )
+    )
+  )
+)
+
+; user=> (fnc-reverse ())
+; (*error* too-few-args)
+; user=> (fnc-reverse '(1))
+; (*error* list expected 1)
+; user=> (fnc-reverse '(A))
+; (*error* list expected A)
+; user=> (fnc-reverse '((1)) )
+; (1)
+; user=> (fnc-reverse '((1 2 3)) )
+; (3 2 1)
+; user=> (fnc-reverse '((1 2 3)(4)) )
+; (*error* too-many-args)
+(defn fnc-reverse [lista]
+  "Devuelve una lista con sus elementos en orden inverso."
+  (let [ari (controlar-aridad lista 1)]
+    (if (error? ari) ari 
+        (if (seq? lista) (reverse lista) (list '*error* 'list 'expected lista))
+    )
+  )
+)
 
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
 true

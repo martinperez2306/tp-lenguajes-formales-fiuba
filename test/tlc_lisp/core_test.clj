@@ -191,3 +191,13 @@
   (testing "Comparar 2 elementos devuelve t si son iguales"
     (is (= '(*error* too-many-args) (fnc-equal '(A a A)))))
 )
+
+(deftest fnc-read-test
+  (testing "Funcion read lanza error si recibe parametros"
+    (is (= '(*error* not-implemented) (fnc-read '((1 2))))))
+)
+
+(deftest fnc-terpri-test
+  (testing "Funcion terpri lanza error si recibe parametros"
+    (is (= '(*error* not-implemented) (fnc-terpri '((1 2))))))
+)
