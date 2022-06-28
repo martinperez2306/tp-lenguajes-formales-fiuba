@@ -72,6 +72,7 @@
 (declare secuencias-iguales?)
 (declare indice-de)
 (declare actualizar-secuencia-en)
+(declare crear-lambda)
 
 (defn -main [& args] (repl))
 
@@ -815,6 +816,59 @@
                         )
                       )
     :else (list escalar amb-global)
+  )
+)
+
+(defn crear-lambda [parametros]
+  "Crea una expresion lambda con los parametros que recibe"
+  (apply list 'lambda parametros)
+)
+
+(defn validar-definicion-funcion [forma-de]
+  (cond
+    (> 3 (count forma-de)) (list '*error* 'list 'expected nil)
+    (not (seq? (nth forma-de 2))) (list '*error* 'list 'expected (nth forma-de 2))
+    (nil? (second forma-de)) (list '*error* 'cannot-set nil)
+    (not (symbol? (second forma-de))) (list '*error* 'symbol 'expected (second forma-de))
+    :else forma-de
+  )
+)
+
+; user=> (evaluar-de '(de f (x)) '(x 1))
+; (f (x 1 f (lambda (x))))
+; user=> (evaluar-de '(de f (x) 2) '(x 1))
+; (f (x 1 f (lambda (x) 2)))
+; user=> (evaluar-de '(de f (x) (+ x 1)) '(x 1))
+; (f (x 1 f (lambda (x) (+ x 1))))
+; user=> (evaluar-de '(de f (x y) (+ x y)) '(x 1))
+; (f (x 1 f (lambda (x y) (+ x y))))
+; user=> (evaluar-de '(de f (x y) (prin3 x) (terpri) y) '(x 1))
+; (f (x 1 f (lambda (x y) (prin3 x) (terpri) y)))
+; user=> (evaluar-de '(de) '(x 1))
+; ((*error* list expected nil) (x 1))
+; user=> (evaluar-de '(de f) '(x 1))
+; ((*error* list expected nil) (x 1))
+; user=> (evaluar-de '(de f 2) '(x 1))
+; ((*error* list expected 2) (x 1))
+; user=> (evaluar-de '(de f 2 3) '(x 1))
+; ((*error* list expected 2) (x 1))
+; user=> (evaluar-de '(de (f)) '(x 1))
+; ((*error* list expected nil) (x 1))
+; user=> (evaluar-de '(de 2 x) '(x 1))
+; ((*error* list expected x) (x 1))
+; user=> (evaluar-de '(de 2 (x)) '(x 1))
+; ((*error* symbol expected 2) (x 1))
+; user=> (evaluar-de '(de nil (x) 2) '(x 1))
+; ((*error* cannot-set nil) (x 1))
+(defn evaluar-de [forma-de amb]
+  "Evalua una forma 'de'. Devuelve una lista con el resultado y un ambiente actualizado con la definicion."
+  (let [validacion (validar-definicion-funcion forma-de)]
+    (if (error? validacion)
+        (list validacion amb)
+        (let [funcion (second forma-de)]
+          (list funcion (actualizar-amb amb funcion (crear-lambda (nnext forma-de))))
+        )
+    )
   )
 )
 

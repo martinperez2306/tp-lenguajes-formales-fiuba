@@ -208,3 +208,32 @@
   (testing "Funcion evaluar escalar devuelve error y ambiente global cuando escalar es evaluado y no existe ni global ni local"
     (is (= '((*error* unbound-symbol n) (v 1 w 3 x 6)) (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
 )
+
+(deftest evaluar-de-test
+  (testing "Funcion evaluar de devuelve una lista con el resultado y un ambiente actualizado con la definicion"
+    (is (= '(f (x 1 f (lambda (x)))) (evaluar-de '(de f (x)) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el resultado y un ambiente actualizado con la definicion"
+    (is (= '(f (x 1 f (lambda (x) 2))) (evaluar-de '(de f (x) 2) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el resultado y un ambiente actualizado con la definicion"
+    (is (= '(f (x 1 f (lambda (x) (+ x 1)))) (evaluar-de '(de f (x) (+ x 1)) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el resultado y un ambiente actualizado con la definicion"
+    (is (= '(f (x 1 f (lambda (x y) (+ x y)))) (evaluar-de '(de f (x y) (+ x y)) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el resultado y un ambiente actualizado con la definicion"
+    (is (= '(f (x 1 f (lambda (x y) (prin3 x) (terpri) y))) (evaluar-de '(de f (x y) (prin3 x) (terpri) y) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de f) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected 2) (x 1)) (evaluar-de '(de f 2) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected 2) (x 1)) (evaluar-de '(de f 2 3) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected nil) (x 1)) (evaluar-de '(de (f)) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* list expected x) (x 1)) (evaluar-de '(de 2 x) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* symbol expected 2) (x 1)) (evaluar-de '(de 2 (x)) '(x 1)))))
+  (testing "Funcion evaluar de devuelve una lista con el error"
+    (is (= '((*error* cannot-set nil) (x 1)) (evaluar-de '(de nil (x) 2) '(x 1)))))
+)
