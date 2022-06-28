@@ -1009,6 +1009,12 @@
 ; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
 (defn evaluar-if [condiciones amb-global amb-local]
   "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
+  (let [resultado (first (evaluar (second condiciones) amb-global amb-local))]
+    (if (not (nil? resultado))
+        (evaluar (first (nnext condiciones)) amb-global amb-local)
+        (evaluar (nnext (rest condiciones)) amb-global amb-local)
+    )
+  )
 )
 
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
