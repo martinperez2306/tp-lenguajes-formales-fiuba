@@ -262,7 +262,12 @@
 (defn aplicar-lambda-simple
   "Evalua una forma lambda 'fnc' con un cuerpo simple."
   [fnc lae amb-global amb-local]
-  (evaluar (first (nnext fnc)) amb-global (concat (reduce concat (map list (second fnc) lae)) amb-local)))
+  (let [lista-params-args (reduce concat (map list (second fnc) lae)),
+        nuevo-amb-local (cond
+                          (empty? amb-local) lista-params-args
+                          (empty? lista-params-args) amb-local
+                          :else (apply concat (apply assoc (apply assoc {} amb-local) lista-params-args)))]
+    (evaluar (first (nnext fnc)) amb-global nuevo-amb-local)))
 
 
 (defn aplicar-lambda-multiple
