@@ -287,7 +287,6 @@
     (igual? fnc 'ge)      (fnc-ge lae)
     (igual? fnc 'lt)      (fnc-lt lae)
     (igual? fnc 'add)     (fnc-add lae)
-    (igual? fnc 'env)     (fnc-env lae)
     (igual? fnc 'not)     (fnc-not lae)
     (igual? fnc 'sub)     (fnc-sub lae)
     (igual? fnc 'cons)    (fnc-cons lae)
@@ -303,6 +302,7 @@
     (igual? fnc 'length)  (fnc-length lae)
     (igual? fnc 'terpri)  (fnc-terpri lae)
     (igual? fnc 'reverse) (fnc-reverse lae)
+    (igual? fnc 'env)     (fnc-env lae amb-global amb-local)
     ; Las funciones primitivas reciben argumentos y retornan un valor (son puras)
     :else (list '*error* 'non-applicable-type fnc)))
 
