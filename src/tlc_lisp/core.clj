@@ -68,6 +68,7 @@
 (declare evaluar-secuencia-en-cond)
 
 ;Funciones auxilares declaradas por el alumno
+(declare controlar-aridad-minima)
 (declare estandarizar)
 (declare secuencias-iguales?)
 (declare indice-de)
@@ -121,7 +122,7 @@
 
         (igual? (first expre) 'cond)   (evaluar-cond expre amb-global amb-local)
         (igual? (first expre) 'de)     (evaluar-de expre amb-global)
-
+        (igual? (first expre) 'if)     (evaluar-if expre amb-global amb-local)
          ;
          ;
          ;
@@ -270,7 +271,7 @@
   [fnc lae amb-global amb-local]
   (cond
     (igual? fnc 'add)     (fnc-add lae)
-
+    (igual? fnc 'gt)      (fnc-gt lae)
     ; Las funciones primitivas reciben argumentos y retornan un valor (son puras)
 
     :else (list '*error* 'non-applicable-type fnc)))
@@ -393,13 +394,25 @@
 ; (*error* too-many-args)
 ; user=> (controlar-aridad '(a b c) 4)
 ; (*error* too-few-args)
-(defn controlar-aridad [sec arity]
+(defn controlar-aridad [sec aridad]
   "Si la longitud de una lista dada es la esperada, devuelve esa longitud.
    Si no, devuelve una lista con un mensaje de error (una lista con *error* como primer elemento)."
   (cond 
-    (= (count sec) arity) arity
-    (> (count sec) arity) (list '*error* 'too-many-args)
-    (< (count sec) arity) (list '*error* 'too-few-args)
+    (= (count sec) aridad) aridad
+    (> (count sec) aridad) (list '*error* 'too-many-args)
+    (< (count sec) aridad) (list '*error* 'too-few-args)
+  )
+)
+
+(defn controlar-aridad-minima [sec aridad]
+  (if (empty? sec)
+      (controlar-aridad sec aridad)
+      (let [control (controlar-aridad sec aridad)]
+        (if (error? control)
+            (controlar-aridad-minima (rest sec) aridad)
+            control
+        )
+      )
   )
 )
 
@@ -712,6 +725,92 @@
   )
 )
 
+; user=> (fnc-add ())
+; (*error* too-few-args)
+; user=> (fnc-add '(3))
+; (*error* too-few-args)
+; user=> (fnc-add '(3 4)) 
+; 7
+; user=> (fnc-add '(3 4 5))
+; 12
+; user=> (fnc-add '(3 4 5 6))
+; 18
+; user=> (fnc-add '(A 4 5 6))
+; (*error* number-expected A)
+; user=> (fnc-add '(3 A 5 6))
+; (*error* number-expected A)
+; user=> (fnc-add '(3 4 A 6))
+; (*error* number-expected A)
+(defn fnc-add [numeros]
+  "Suma los elementos de una lista. Minimo 2 elementos."
+  (let [ari (controlar-aridad-minima numeros 2)]
+    (if (error? ari) ari 
+      (if (every? identity (map number? numeros)) 
+          (reduce + numeros)
+          (list '*error* 'number-expected (first (remove number? numeros)))
+      )
+    )
+  )
+)
+
+
+; user=> (fnc-sub ())
+; (*error* too-few-args)
+; user=> (fnc-sub '(3))
+; -3
+; user=> (fnc-sub '(3 4))
+; -1
+; user=> (fnc-sub '(3 4 5))
+; -6
+; user=> (fnc-sub '(3 4 5 6))
+; -12
+; user=> (fnc-sub '(A 4 5 6))
+; (*error* number-expected A)
+; user=> (fnc-sub '(3 A 5 6))
+; (*error* number-expected A)
+; user=> (fnc-sub '(3 4 A 6))
+; (*error* number-expected A)
+(defn fnc-sub [numeros]
+  "Resta los elementos de un lista. Minimo 1 elemento."
+  (let [ari (controlar-aridad-minima numeros 1)]
+    (if (error? ari) ari 
+      (if (every? identity (map number? numeros)) 
+          (if(= 1 (count numeros)) (- (first numeros)) (reduce - numeros))
+          (list '*error* 'number-expected (first (remove number? numeros)))
+      )
+    )
+  )
+)
+
+
+; user=> (fnc-lt ())
+; (*error* too-few-args)
+; user=> (fnc-lt '(1))
+; (*error* too-few-args)
+; user=> (fnc-lt '(1 2))
+; t
+; user=> (fnc-lt '(1 1))
+; nil
+; user=> (fnc-lt '(2 1))
+; nil
+; user=> (fnc-lt '(A 1))
+; (*error* number-expected A)
+; user=> (fnc-lt '(1 A))
+; (*error* number-expected A)
+; user=> (fnc-lt '(1 2 3))
+; (*error* too-many-args)
+(defn fnc-lt [numeros]
+    "Devuelve t si el primer numero es menor que el segundo; si no, nil."
+    (let [ari (controlar-aridad numeros 2)]
+      (if (error? ari) ari 
+        (if (every? identity (map number? numeros)) 
+          (if (apply < numeros) 't)
+          (list '*error* 'number-expected (first (remove number? numeros)))
+        )
+      )
+    )
+)
+
 ; user=> (fnc-gt ())
 ; (*error* too-few-args)
 ; user=> (fnc-gt '(1))
@@ -732,9 +831,10 @@
   "Devuelve t si el primer numero es mayor que el segundo; si no, nil."
   (let [ari (controlar-aridad numeros 2)]
     (if (error? ari) ari 
-        (let [mayor (apply > numeros)] 
-          (if(mayor) (mayor))
-        )
+      (if (every? identity (map number? numeros)) 
+        (if (apply > numeros) 't)
+        (list '*error* 'number-expected (first (remove number? numeros)))
+      )
     )
   )
 )
@@ -759,9 +859,10 @@
   "Devuelve t si el primer numero es mayor o igual que el segundo; si no, nil."
   (let [ari (controlar-aridad numeros 2)]
     (if (error? ari) ari 
-        (let [mayor-igual (or (apply > numeros) (apply = numeros))] 
-          (if(mayor-igual) (mayor-igual))
-        )
+      (if (every? identity (map number? numeros)) 
+        (if (or (apply > numeros) (apply = numeros)) 't)
+        (list '*error* 'number-expected (first (remove number? numeros)))
+      )
     )
   )
 )
@@ -870,6 +971,44 @@
         )
     )
   )
+)
+
+; user=> (evaluar-if '(if t) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if 7) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if x) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if t 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if z 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if w 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (9 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if r 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol r) (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (nil (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 1 2 3 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 w) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (3 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if nil a 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 2 0) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol a) (gt gt nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 0 2) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (gt gt nil nil t t v 1 w 3 x 6))
+; user=> (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (8 (gt gt nil nil t t v 1 w 3 x 6 m 8))
+(defn evaluar-if [condiciones amb-global amb-local]
+  "Evalua una forma 'if'. Devuelve una lista con el resultado y un ambiente eventualmente modificado."
 )
 
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
