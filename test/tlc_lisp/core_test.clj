@@ -113,21 +113,11 @@
     (is (= '(*error* too-many-args) (revisar-lae '((*error* too-many-args) (*error* too-few-args) 3)))))
 )
 
-(deftest secuencia-a-hashmap-test
-  (testing "Devuelve un hashmap dado una secuencia"
-    (is (= '{a 1, b 2, c 3, d 4} (secuencia-a-hashmap '(a 1 b 2 c 3 d 4)))))
-)
-
-(deftest hashmap-a-secuencia-test
-  (testing "Devuelve un hashmap dado una secuencia"
-    (is (= '(a 1 b 2 c 3 d 4) (hashmap-a-secuencia '{a 1, b 2, c 3, d 4}))))
-)
-
 (deftest actualizar-amb-test
   (testing "Actualiza el ambiente con nuevo valor"
-    (is (= '(a 1 c 3 b 2 d 4) (actualizar-amb '(a 1 b 2 c 3) 'd 4)))) ;;REVISAR SI HACE FALTA ORDENAR PARA QUE MANTENGA EL MISMO ORDEN
+    (is (= '(a 1 b 2 c 3 d 4) (actualizar-amb '(a 1 b 2 c 3) 'd 4))))
   (testing "Actualiza el ambiente con valor existente"
-    (is (= '(a 1 c 3 b 4) (actualizar-amb '(a 1 b 2 c 3) 'b 4))))
+    (is (= '(a 1 b 4 c 3) (actualizar-amb '(a 1 b 2 c 3) 'b 4))))
   (testing "Actualiza el ambiente vacio"
     (is (= '(b 7) (actualizar-amb '() 'b 7))))
   (testing "No actualiza ambiente cuando recibe error"

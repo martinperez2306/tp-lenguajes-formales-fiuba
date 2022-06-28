@@ -70,8 +70,8 @@
 ;Funciones auxilares declaradas por el alumno
 (declare estandarizar)
 (declare secuencias-iguales?)
-(declare secuencia-a-hashmap)
-(declare hashmap-a-secuencia)
+(declare indice-de)
+(declare actualizar-secuencia-en)
 
 (defn -main [& args] (repl))
 
@@ -537,15 +537,12 @@
     (if (empty? errores) nil (first errores)))
 )
 
-(defn secuencia-a-hashmap [secuencia]
-  "Devuelve un hashmap dado una secuencia"
-  (apply hash-map secuencia)
-)
-
-(defn hashmap-a-secuencia [hashmap]
-  "Devuelve una secuencia (clave1 valor1 clave2 valor2 ... ) dado un hashmap"
-  (let [secuencia-auxiliar (map (fn [x] (list (key x) (val x))) hashmap)]
-  (apply concat secuencia-auxiliar))
+(defn actualizar-secuencia-en [secuencia indice valor]
+  "Actualiza el valor del elemento en una secuencia en el indice dado"
+  (if (or (> indice (count secuencia)) (< indice -1))
+      (list '*error* 'index-out-of-bound)
+      (map-indexed (fn [idx itm] (if (igual? idx indice) valor itm)) secuencia)
+  )
 )
 
 ; user=> (actualizar-amb '(a 1 b 2 c 3) 'd 4)
@@ -556,19 +553,30 @@
 ; (a 1 b 2 c 3)
 ; user=> (actualizar-amb () 'b 7)
 ; (b 7)
-(defn actualizar-amb [amb clave valor]
+(defn actualizar-amb [amb clave nuevo-valor]
   "Devuelve un ambiente actualizado con una clave (nombre de la variable o funcion) y su valor. 
   Si el valor es un error, el ambiente no se modifica. De lo contrario, se le carga o reemplaza el valor."
-  (if (error? valor) 
+  (if (error? nuevo-valor) 
       amb
-      (hashmap-a-secuencia
-        (assoc
-          (secuencia-a-hashmap amb)
-          clave 
-          valor
-        )
+      (let [viejo-valor (buscar clave amb)]
+        (if (error? viejo-valor)
+            (concat amb (list clave nuevo-valor))
+            (actualizar-secuencia-en amb (inc (indice-de clave amb)) nuevo-valor)
+        )       
       )
   )
+)
+
+(defn indice-de [elemento coleccion]
+  "Devuelve el indice de un elemento en una coleccion. Si el elemento no existe devuelve -1"
+  (let [indice (filter 
+                (fn [idx] (not (igual? -1 idx))) 
+                (map-indexed (fn [idx itm] (if (igual? itm elemento) idx -1)) coleccion)
+               )
+       ]
+    (if (or (nil? indice) (not (seq? indice)) (empty? indice)) -1 (first indice)) 
+  )
+  
 )
 
 ; user=> (buscar 'c '(a 1 b 2 c 3 d 4 e 5))
@@ -578,8 +586,8 @@
 (defn buscar [clave amb]
   "Busca una clave en un ambiente (una lista con claves en las posiciones impares [1, 3, 5...] y valores en las pares [2, 4, 6...]
    y devuelve el valor asociado. Devuelve un mensaje de error si no la encuentra."
-   (let [valor ((secuencia-a-hashmap amb) clave)]
-    (if (nil? valor) (list '*error* 'unbound-symbol clave) valor)
+   (let [indice-clave (indice-de clave amb)]
+    (if (or (igual? -1 indice-clave) (odd? indice-clave)) (list '*error* 'unbound-symbol clave) (nth amb (inc indice-clave)))
    )
 )
 
