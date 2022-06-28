@@ -192,6 +192,94 @@
     (is (= '(*error* not-implemented) (fnc-terpri '((1 2))))))
 )
 
+(deftest fnc-add-test
+  (testing "Funcion add lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-add '()))))
+  (testing "Funcion add lanza error si no recibe 1 parametro"
+    (is (= '(*error* too-few-args) (fnc-add '(1)))))
+  (testing "Funcion add suma parametros"
+    (is (= 12 (fnc-add '(4 4 4)))))
+  (testing "Funcion add lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-add '(1 2 3 A)))))
+)
+
+(deftest fnc-sub-test
+  (testing "Funcion sub lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-sub '()))))
+  (testing "Funcion sub invierte signo si no recibe 1 parametro"
+    (is (= -1 (fnc-sub '(1)))))
+  (testing "Funcion sub resta parametros"
+    (is (= -4 (fnc-sub '(1 2 3)))))
+  (testing "Funcion sub lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-sub '(1 2 3 A)))))
+)
+
+(deftest fnc-lt-test
+  (testing "Funcion lt lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-lt '()))))
+  (testing "Funcion lt lanza error si no recibe 1 parametro"
+    (is (= '(*error* too-few-args) (fnc-lt '(1)))))
+  (testing "Funcion lt devuelve nil si el primer parametro es mayor al segundo"
+    (is (nil? (fnc-lt '(2 1)))))
+  (testing "Funcion lt devuelve t si el primer parametro es menor al segundo"
+    (is (= 't (fnc-lt '(1 2)))))
+  (testing "Funcion lt lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-lt '(1 A)))))
+  (testing "Funcion lt lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-lt '(A 1)))))
+  (testing "Funcion lt lanza error si tiene mas de 2"
+    (is (= '(*error* too-many-args) (fnc-lt '(1 2 3)))))
+)
+
+(deftest fnc-gt-test
+  (testing "Funcion gt lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-gt '()))))
+  (testing "Funcion gt lanza error si no recibe 1 parametro"
+    (is (= '(*error* too-few-args) (fnc-gt '(1)))))
+  (testing "Funcion gt devuelve nil si el primer parametro es menor al segundo"
+    (is (nil? (fnc-gt '(1 2)))))
+  (testing "Funcion gt devuelve t si el primer parametro es mayor al segundo"
+    (is (= 't (fnc-gt '(2 1)))))
+  (testing "Funcion gt lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-gt '(1 A)))))
+  (testing "Funcion gt lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-gt '(A 1)))))
+  (testing "Funcion gt lanza error si tiene mas de 2"
+    (is (= '(*error* too-many-args) (fnc-gt '(1 2 3)))))
+)
+
+(deftest fnc-ge-test
+  (testing "Funcion ge lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-ge '()))))
+  (testing "Funcion ge lanza error si no recibe 1 parametro"
+    (is (= '(*error* too-few-args) (fnc-ge '(1)))))
+  (testing "Funcion ge devuelve nil si el primer parametro es menor al segundo"
+    (is (nil? (fnc-ge '(1 2)))))
+  (testing "Funcion ge devuelve t si el primer parametro es mayor al segundo"
+    (is (= 't (fnc-ge '(2 1)))))
+  (testing "Funcion ge devuelve t si el primer parametro es igual al segundo"
+    (is (= 't (fnc-ge '(1 1)))))
+  (testing "Funcion ge lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-ge '(1 A)))))
+  (testing "Funcion ge lanza error si 1 parametro no es numero"
+    (is (= '(*error* number-expected A) (fnc-ge '(A 1)))))
+  (testing "Funcion ge lanza error si tiene mas de 2"
+    (is (= '(*error* too-many-args) (fnc-ge '(1 2 3)))))
+)
+
+(deftest fnc-reverse-test
+  (testing "Funcion reverse lanza error si no recibe parametros"
+    (is (= '(*error* too-few-args) (fnc-reverse '()))))
+  (testing "Funcion reverse devuelve error si el parametro no es una lista"
+    (is (= '(*error* list expected A) (fnc-reverse '(A)))))
+  (testing "Funcion reverse devuelve lista al reves"
+    (is (= '(1) (fnc-reverse '((1))))))
+  (testing "Funcion reverse devuelve lista al reves"
+    (is (= '(3 2 1) (fnc-reverse '((1 2 3))))))
+  (testing "Funcion reverse lanza error si tiene mas de 1 parametro"
+    (is (= '(*error* too-many-args) (fnc-reverse '((1 2 3) (4))))))
+)
+
 (deftest evaluar-escalar-test
   (testing "Funcion evaluar escalar devuelve escalar y ambiente global cuando escalar es numero"
     (is (= '(32 (v 1 w 3 x 6)) (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
@@ -236,4 +324,103 @@
     (is (= '((*error* symbol expected 2) (x 1)) (evaluar-de '(de 2 (x)) '(x 1)))))
   (testing "Funcion evaluar de devuelve una lista con el error"
     (is (= '((*error* cannot-set nil) (x 1)) (evaluar-de '(de nil (x) 2) '(x 1)))))
+)
+
+(deftest evaluar-if-test
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if t) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(nil (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if 7) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(nil (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(nil (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if x) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(nil (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if t 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(9 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if z 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(9 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if w 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(9 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if r 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '((*error* unbound-symbol r) (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(nil (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '("hola" (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9 1 2 3 z) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '("hola" (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9 w) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(3 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(8 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil 9 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(8 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if nil a 8) '(nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(8 (nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if (gt 2 0) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '((*error* unbound-symbol a) (gt gt nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if (gt 0 2) a 8) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(8 (gt gt nil nil t t v 1 w 3 x 6))))
+  )
+  (testing "Evaluar if"
+    (is (= (evaluar-if '(if (gt 0 2) a (setq m 8)) '(gt gt nil nil t t v 1 w 3 x 6) '(x 5 y 11 z "hola")) '(8 (gt gt nil nil t t v 1 w 3 x 6 m 8))))
+  )
+)
+
+(deftest evaluar-or-test
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(nil (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(nil (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or t) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(t (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or w) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(5 (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or y) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(nil (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(6 (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or r) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '((*error* unbound-symbol r) (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil 6) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(6 (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or (setq b 8) nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(8 (nil nil t t w 5 x 4 b 8))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil 6 nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(6 (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil 6 r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(6 (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil t r nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(t (nil nil t t w 5 x 4))))
+  )
+  (testing "Evaluar or"
+    (is (= (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(nil (nil nil t t w 5 x 4))))
+  )
 )
