@@ -68,14 +68,14 @@
 (declare evaluar-secuencia-en-cond)
 
 ;Funciones auxilares declaradas por el alumno
-(declare controlar-aridad-minima)
-(declare estandarizar)
-(declare secuencias-iguales?)
 (declare indice-de)
-(declare actualizar-secuencia-en)
+(declare estandarizar)
 (declare crear-lambda)
-(declare evaluar-actualizaciones-setq)
+(declare secuencias-iguales?)
 (declare evaluar-actualizacion)
+(declare actualizar-secuencia-en)
+(declare controlar-aridad-minima)
+(declare evaluar-actualizaciones-setq)
 
 (defn -main [& args] (repl))
 
@@ -139,7 +139,6 @@
          ;
          ;
          ;
-
         :else (let [res-eval-1 (evaluar (first expre) amb-global amb-local),
 				                res-eval-2 (reduce (fn [x y] (let [res-eval-3 (evaluar y (first x) amb-local)] (cons (second res-eval-3) (concat (next x) (list (first res-eval-3)))))) (cons (list (second res-eval-1)) (next expre)))]
 				               (aplicar (first res-eval-1) (next res-eval-2) (first res-eval-2) amb-local)))))
