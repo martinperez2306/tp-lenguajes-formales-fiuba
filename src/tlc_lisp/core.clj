@@ -125,6 +125,7 @@
         (igual? (first expre) 'de)     (evaluar-de expre amb-global)
         (igual? (first expre) 'if)     (evaluar-if expre amb-global amb-local)
         (igual? (first expre) 'or)     (evaluar-or expre amb-global amb-local)
+        (igual? (first expre) 'setq)   (evaluar-setq expre amb-global amb-local)
          ;
          ;
          ;
@@ -1113,28 +1114,27 @@
 )
 
 (defn evaluar-actualizaciones-setq [actualizaciones amb-global amb-local]
-  (cond
-    (empty? actualizaciones) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
-    (odd? (count actualizaciones)) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
-    :else (let [actualizacion (drop-last (- (count actualizaciones) 2) actualizaciones)]
-            (cond
-              (nil? (first actualizacion)) (reverse (conj (conj () (list '*error* 'cannot-set nil)) amb-global))
-              (not (symbol? (first actualizacion))) (reverse (conj (conj () (list '*error* 'symbol 'expected (first actualizacion))) amb-global))
-              :else (let [actualizacion-evaluada (evaluar-actualizacion actualizacion amb-global amb-local)]
-                      (
-                        let [amb-global-actualizado (actualizar-amb amb-global (first actualizacion-evaluada) (second actualizacion-evaluada))]
-                        (if (empty? (drop 2 actualizaciones))
-                            (evaluar (second actualizacion-evaluada) amb-global-actualizado amb-local)
-                            (evaluar-actualizaciones-setq (drop 2 actualizaciones) amb-global-actualizado amb-local)
-                        )
-                      )
+  (let [actualizacion (drop-last (- (count actualizaciones) 2) actualizaciones)]
+        (cond
+          (empty? actualizacion) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
+          (odd? (count actualizacion)) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
+          (nil? (first actualizacion)) (reverse (conj (conj () (list '*error* 'cannot-set nil)) amb-global))
+          (not (symbol? (first actualizacion))) (reverse (conj (conj () (list '*error* 'symbol 'expected (first actualizacion))) amb-global))
+          :else (let [actualizacion-evaluada (evaluar-actualizacion actualizacion amb-global amb-local)]
+                  (
+                    let [amb-global-actualizado (actualizar-amb amb-global (first actualizacion-evaluada) (second actualizacion-evaluada))]
+                    (if (empty? (drop 2 actualizaciones))
+                        (evaluar (second actualizacion-evaluada) amb-global-actualizado amb-local)
+                        (evaluar-actualizaciones-setq (drop 2 actualizaciones) amb-global-actualizado amb-local)
                     )
-            )
-          )
-    )
+                  )
+                )
+        )
+  )
 )
 
 (defn evaluar-actualizacion [actualizacion amb-global amb-local]
+  "Evalua una actualizacion. El primerr elemento es una clave (simbolo), no debe ser evaluada. Solo evalua el segundo elemento (valor)"
   (list (first actualizacion) (first (evaluar (second actualizacion) amb-global amb-local)) )
 )
 

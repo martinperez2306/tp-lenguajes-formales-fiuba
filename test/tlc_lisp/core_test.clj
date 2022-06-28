@@ -424,3 +424,19 @@
     (is (= (evaluar-or '(or nil nil nil nil) '(nil nil t t w 5 x 4) '(x 1 y nil z 3)) '(nil (nil nil t t w 5 x 4))))
   )
 )
+
+(deftest testing-evaluar-setq
+  (testing "cuando ejecuto la funcion, el ambiente debería cambiar de la manera esperada"
+    (is (= (evaluar-setq '(setq) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '((*error* list expected nil) (nil nil t t + add w 5 x 4))))
+    (is (= (evaluar-setq '(setq m) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '((*error* list expected nil) (nil nil t t + add w 5 x 4))))
+    (is (= (evaluar-setq '(setq m 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '(7 (nil nil t t + add w 5 x 4 m 7))))
+    (is (= (evaluar-setq '(setq m 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '(7 (nil nil t t + add w 5 x 4 m 7))))
+    (is (= (evaluar-setq '(setq x 7) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '(7 (nil nil t t + add w 5 x 7))))
+    (is (= (evaluar-setq '(setq x (+ x 1)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '(2 (nil nil t t + add w 5 x 2))))
+    (is (= (evaluar-setq '(setq 7 8) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '((*error* symbol expected 7) (nil nil t t + add w 5 x 4))))
+    (is (= (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(x 1 y nil z 3)) '(8 (nil nil t t + add w 5 x 7 m 8))))
+    (is (= (evaluar-setq '(setq x 7 m (+ x 7)) '(nil nil t t + add w 5 x 4) '(y nil z 3)) '(14 (nil nil t t + add w 5 x 7 m 14))))
+    (is (= (evaluar-setq '(setq x 7 y) '(nil nil t t + add w 5 x 4) '(y nil z 3)) '((*error* list expected nil) (nil nil t t + add w 5 x 7))))
+    (is (= (evaluar-setq '(setq x 7 y 8 z 9) '(nil nil t t + add w 5 x 4) '(y nil z 3)) '(9 (nil nil t t + add w 5 x 7 y 8 z 9))))
+  )
+)
