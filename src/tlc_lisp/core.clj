@@ -786,5 +786,37 @@
   )
 )
 
+; user=> (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (32 (v 1 w 3 x 6))
+; user=> (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("chau" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ("hola" (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (3 (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'x '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; (5 (v 1 w 3 x 6))
+; user=> (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola"))
+; ((*error* unbound-symbol n) (v 1 w 3 x 6))
+(defn evaluar-escalar [escalar amb-global amb-local]
+  "Evalua una expresion escalar consultando, si corresponde, los ambientes local y global. Devuelve una lista con el resultado y un ambiente."
+  (cond
+    (symbol? escalar) (let [resultado-local (buscar escalar amb-local) ]
+                        (if (error? resultado-local) 
+                            (let [resultado-global (buscar escalar amb-global)]
+                              (if (error? resultado-global)
+                                  (reverse (conj (conj () (list '*error* 'unbound-symbol escalar)) amb-global))
+                                  (list resultado-global amb-global)
+                              )
+                            )
+                            (list resultado-local amb-global)
+                        )
+                      )
+    :else (list escalar amb-global)
+  )
+)
+
 ; Al terminar de cargar el archivo en el REPL de Clojure (con load-file), se debe devolver true.
 true

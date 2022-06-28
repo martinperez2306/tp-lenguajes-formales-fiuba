@@ -191,3 +191,20 @@
   (testing "Funcion terpri lanza error si recibe parametros"
     (is (= '(*error* not-implemented) (fnc-terpri '((1 2))))))
 )
+
+(deftest evaluar-escalar-test
+  (testing "Funcion evaluar escalar devuelve escalar y ambiente global cuando escalar es numero"
+    (is (= '(32 (v 1 w 3 x 6)) (evaluar-escalar 32 '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve escalar y ambiente global cuando escalar es string"
+    (is (= '("chau" (v 1 w 3 x 6)) (evaluar-escalar "chau" '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve valor local y ambiente global cuando escalar es evaluado y existe en local"
+    (is (= '("hola" (v 1 w 3 x 6)) (evaluar-escalar 'z '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve valor local y ambiente global cuando escalar es evaluado y existe en local (case insensitive)"
+    (is (= '("hola" (v 1 w 3 x 6)) (evaluar-escalar 'Z '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve valor global y ambiente global cuando escalar es evaluado y existe en global"
+    (is (= '(3 (v 1 w 3 x 6)) (evaluar-escalar 'w '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve valor local y ambiente global cuando escalar es evaluado y existe en local y global"
+    (is (= '(5 (v 1 w 3 x 6)) (evaluar-escalar 'x '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+  (testing "Funcion evaluar escalar devuelve error y ambiente global cuando escalar es evaluado y no existe ni global ni local"
+    (is (= '((*error* unbound-symbol n) (v 1 w 3 x 6)) (evaluar-escalar 'n '(v 1 w 3 x 6) '(x 5 y 11 z "hola")))))
+)
