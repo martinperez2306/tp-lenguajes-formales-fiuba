@@ -68,6 +68,7 @@
 (declare evaluar-secuencia-en-cond)
 
 ;Funciones auxilares declaradas por el alumno
+(declare es-nil?)
 (declare indice-de)
 (declare estandarizar)
 (declare crear-lambda)
@@ -415,6 +416,10 @@
     (symbol? expresion) (symbol (lower-case expresion))
     :else expresion
   )
+)
+
+(defn es-nil? [expresion]
+  (igual? nil expresion)
 )
 
 ; user=> (controlar-aridad '(a b c) 3)
@@ -958,7 +963,7 @@
   (cond
     (> 3 (count forma-de)) (list '*error* 'list 'expected nil)
     (not (seq? (nth forma-de 2))) (list '*error* 'list 'expected (nth forma-de 2))
-    (nil? (second forma-de)) (list '*error* 'cannot-set nil)
+    (es-nil? (second forma-de)) (list '*error* 'cannot-set nil)
     (not (symbol? (second forma-de))) (list '*error* 'symbol 'expected (second forma-de))
     :else forma-de
   )
@@ -1041,7 +1046,7 @@
   (let [resultado (evaluar (second condiciones) amb-global amb-local)]
     (cond 
         (error? (first resultado)) resultado
-        (nil? (first resultado)) (evaluar (list 'cond (conj (nnext (rest condiciones)) 't)) amb-global amb-local)
+        (es-nil? (first resultado)) (evaluar (list 'cond (conj (nnext (rest condiciones)) 't)) amb-global amb-local)
         :else (evaluar (first (nnext condiciones)) amb-global amb-local)
     )
   )
@@ -1080,7 +1085,7 @@
       (list nil amb-global)
       (let [resultado (evaluar (second condiciones) amb-global amb-local)]
         (cond
-          (nil? (first resultado)) (evaluar-or (next condiciones) amb-global amb-local)
+          (es-nil? (first resultado)) (evaluar-or (next condiciones) amb-global amb-local)
           (error? (first resultado)) resultado
           :else resultado
         )
@@ -1127,7 +1132,7 @@
         (cond
           (empty? actualizacion) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
           (odd? (count actualizacion)) (reverse (conj (conj () (list '*error* 'list 'expected nil)) amb-global))
-          (nil? (first actualizacion)) (reverse (conj (conj () (list '*error* 'cannot-set nil)) amb-global))
+          (es-nil? (first actualizacion)) (reverse (conj (conj () (list '*error* 'cannot-set nil)) amb-global))
           (not (symbol? (first actualizacion))) (reverse (conj (conj () (list '*error* 'symbol 'expected (first actualizacion))) amb-global))
           :else (let [actualizacion-evaluada (evaluar-actualizacion actualizacion amb-global amb-local)]
                   (

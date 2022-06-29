@@ -26,6 +26,15 @@
     (is (= (controlar-aridad '(a b c) 3) '3)))
 )
 
+(deftest controlar-aridad-minima-test
+  (testing "Controlar aridad minim devuelve error cuando la cantidad de parametros es menor a la esperada"
+    (is (= (controlar-aridad-minima '(a b c) 4) '(*error* too-few-args))))
+  (testing "Controlar aridad devuelve aridad minima cuando la cantidad de parametros es mayor a la esperada"
+    (is (= (controlar-aridad-minima '(a b c) 2) 2)))
+  (testing "Controlar aridad devuelve aridad cuando la cantidad de parametros es igual a la esperada"
+    (is (= (controlar-aridad-minima '(a b c) 3) 3)))
+)
+
 (deftest secuencias-iguales-test
   (testing "Secuencias iguales devuelve false cuando dos secuencias tienen distinto tamaño"
     (is (false? (secuencias-iguales? '("a" "b" "c") '("a" "b")))))
