@@ -17,6 +17,17 @@
     (is (= '"A" (estandarizar '"A"))))
 )
 
+(deftest es-nil-test
+  (testing "Es nil devuelve true cuando nil"
+    (is (es-nil? nil)))
+  (testing "Es nil devuelve true cuando 'nil"
+    (is (es-nil? 'nil)))
+  (testing "Estandarizar devuelve true cuando recibe 'NIL"
+    (is (es-nil? 'NIL)))
+  (testing "Estandarizar devuelve true cuando recibe 'NIL"
+    (is (es-nil? '"NIL")))
+)
+
 (deftest controlar-aridad-test
   (testing "Controlar aridad devuelve error cuando la cantidad de parametros es menor a la esperada"
     (is (= (controlar-aridad '(a b c) 4) '(*error* too-few-args))))
@@ -131,6 +142,13 @@
     (is (= '(b 7) (actualizar-amb '() 'b 7))))
   (testing "No actualiza ambiente cuando recibe error"
     (is (= '(a 1 b 2 c 3)  (actualizar-amb '(a 1 b 2 c 3) 'b (list '*error* 'mal 'hecho)))))
+)
+
+(deftest indice-de-test
+  (testing "Indice de retorna el indice de una secuencia. Primer indice 0."
+    (is (= 4 (indice-de 'c '(a 1 b 2 c 3 d 4 e 5)))))
+  (testing "Indice de retorna -1 si no existe elemento en secuencia"
+    (is (= -1 (indice-de 'f '(a 1 b 2 c 3 d 4 e 5)))))
 )
 
 (deftest buscar-test
