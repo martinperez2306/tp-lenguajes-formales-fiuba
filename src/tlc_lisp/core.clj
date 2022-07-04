@@ -741,7 +741,11 @@
 (defn fnc-read [input]
   "Devuelve la lectura de un elemento de TLC-LISP desde la terminal/consola."
   (let [ari (controlar-aridad input 0)]
-    (if (error? ari) (list '*error* 'not-implemented) (read))
+    (if (error? ari) (list '*error* 'not-implemented) 
+      (let [r (read)]
+        (if (igual? '() r) nil r)
+      )
+    )
   )
 )
 
@@ -755,7 +759,7 @@
 (defn fnc-terpri [input]
   "Imprime un salto de línea y devuelve nil."
   (let [ari (controlar-aridad input 0)]
-    (if (error? ari) (list '*error* 'not-implemented) (println "\n"))
+    (if (error? ari) (list '*error* 'not-implemented) (println ""))
   )
 )
 
